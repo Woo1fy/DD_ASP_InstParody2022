@@ -1,5 +1,6 @@
 ﻿using Api.Models;
 using Api.Services;
+using Api.Services.Abstract;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DAL;
@@ -15,19 +16,19 @@ namespace Api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private readonly UserService _userService;
+        private readonly IUserService userService;
 
-        public UserController(UserService userService)
+        public UserController(IUserService userService)
         {
-            _userService = userService;
+            this.userService = userService;
         }
 
         [HttpPost]
-        public async Task CreateUser(CreateUserModel model) => await _userService.CreateUser(model);
+        public async Task CreateUser(CreateUserModel model) => await userService.CreateUser(model);
 
         [HttpGet]
         [Authorize]
-        public async Task<List<UserModel>> GetUsers() => await _userService.GetUsers();
+        public async Task<List<UserModel>> GetUsers() => await userService.GetUsers();
 
         [HttpGet]
         [Authorize]
@@ -37,7 +38,7 @@ namespace Api.Controllers
             if (Guid.TryParse(userIdString, out var userId))
             {
 
-                return await _userService.GetUser(userId);
+                return await userService.GetUser(userId);
             }
             else
                 throw new Exception("you are not authorized");

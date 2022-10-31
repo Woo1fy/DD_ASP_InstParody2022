@@ -1,6 +1,7 @@
 using Api;
 using Api.Configs;
 using Api.Services;
+using Api.Services.Abstract;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -96,9 +97,10 @@ internal class Program
 
         builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
-        builder.Services.AddScoped<UserService>();
+        builder.Services.AddScoped<IUserService, UserService>();
+		builder.Services.AddScoped<ITokenService, TokenService>();
 
-        builder.Services.AddAuthentication(o =>
+		builder.Services.AddAuthentication(o =>
         {
             o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(o =>
