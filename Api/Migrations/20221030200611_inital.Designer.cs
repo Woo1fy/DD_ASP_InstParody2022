@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221025162835_inital")]
+    [Migration("20221030200611_inital")]
     partial class inital
     {
         /// <inheritdoc />
@@ -35,18 +35,18 @@ namespace Api.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
 
                     b.ToTable("Users");
                 });

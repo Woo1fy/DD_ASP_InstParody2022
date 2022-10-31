@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
 {
+    // Добавляем [action] для того, чтобы оперировать всеми возможными запросами (глаголами) 
     [Route("api/[controller]/[action]")]
     [ApiController]
     public class UserController : ControllerBase

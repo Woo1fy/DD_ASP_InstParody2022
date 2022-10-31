@@ -1,5 +1,6 @@
 ﻿using Api.Configs;
 using Api.Models;
+using Api.Services.Abstract;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Common;
@@ -12,7 +13,7 @@ using System.Security.Claims;
 
 namespace Api.Services
 {
-    public class UserService
+    public class UserService:IUserService
     {
         private readonly IMapper _mapper;
         private readonly DAL.DataContext _context;
@@ -25,13 +26,13 @@ namespace Api.Services
             _config = config.Value;
         }
 
-        public async Task CreateUser(CreateUserModel model)
-        {
-            var dbUser = _mapper.Map<DAL.Entities.User>(model);
-            await _context.Users.AddAsync(dbUser);
-            await _context.SaveChangesAsync();
-        }
-        public async Task<List<UserModel>> GetUsers()
+		public async Task CreateUser(CreateUserModel model) {
+			var dbUser = _mapper.Map<DAL.Entities.User>(model);
+			await _context.Users.AddAsync(dbUser);
+			await _context.SaveChangesAsync();
+		}
+
+		public async Task<List<UserModel>> GetUsers()
         {
             return await _context.Users.AsNoTracking().ProjectTo<UserModel>(_mapper.ConfigurationProvider).ToListAsync();
         }
@@ -63,37 +64,36 @@ namespace Api.Services
             return user;
         }
 
-        private TokenModel GenerateTokens(DAL.Entities.User user)
-        {
-            var dtNow = DateTime.Now;
+		private TokenModel GenerateTokens(DAL.Entities.User user) {
+			var dtNow = DateTime.Now;
 
-            var jwt = new JwtSecurityToken(
-                issuer: _config.Issuer,
-                audience: _config.Audience,
-                notBefore: dtNow,
-                claims: new Claim[] {
-            new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
-            new Claim("id", user.Id.ToString()),
-            },
-                expires: DateTime.Now.AddMinutes(_config.LifeTime),
-                signingCredentials: new SigningCredentials(_config.SymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
-                );
-            var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+			var jwt = new JwtSecurityToken(
+				issuer: _config.Issuer,
+				audience: _config.Audience,
+				notBefore: dtNow,
+				claims: new Claim[] {
+			new Claim(ClaimsIdentity.DefaultNameClaimType, user.Name),
+			new Claim("id", user.Id.ToString()),
+			},
+				expires: DateTime.Now.AddMinutes(_config.LifeTime),
+				signingCredentials: new SigningCredentials(_config.SymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
+				);
+			var encodedJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
 
-            var refresh = new JwtSecurityToken(
-                notBefore: dtNow,
-                claims: new Claim[] {
-                new Claim("id", user.Id.ToString()),
-                },
-                expires: DateTime.Now.AddHours(_config.LifeTime),
-                signingCredentials: new SigningCredentials(_config.SymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
-                );
-            var encodedRefresh = new JwtSecurityTokenHandler().WriteToken(refresh);
+			var refresh = new JwtSecurityToken(
+				notBefore: dtNow,
+				claims: new Claim[] {
+				new Claim("id", user.Id.ToString()),
+				},
+				expires: DateTime.Now.AddHours(_config.LifeTime),
+				signingCredentials: new SigningCredentials(_config.SymmetricSecurityKey(), SecurityAlgorithms.HmacSha256)
+				);
+			var encodedRefresh = new JwtSecurityTokenHandler().WriteToken(refresh);
 
-            return new TokenModel(encodedJwt, encodedRefresh);
+			return new TokenModel(encodedJwt, encodedRefresh);
 
-        }
-        public async Task<TokenModel> GetToken(string login, string password)
+		}
+		public async Task<TokenModel> GetToken(string login, string password)
         {
             var user = await GetUserByCredention(login, password);
 

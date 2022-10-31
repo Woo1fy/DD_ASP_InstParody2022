@@ -3,6 +3,7 @@ using Api.Configs;
 using Api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
@@ -10,21 +11,51 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+		// Инициализирует новый экземпляр класса WebApplicationBuilder с предварительно настроенными значениями по умолчанию.
+		var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
+        // Создаем конфигурацию для аутентификации
         var authSection = builder.Configuration.GetSection(AuthConfig.Position);
-        var authConfig = authSection.Get<AuthConfig>();
 
+		/// <summary>
+		/// Попытка связать экземпляр конфигурации с новым экземпляром типа T.
+		/// Если у этого раздела конфигурации есть значение, оно будет использовано.
+		/// В противном случае привязка осуществляется путем рекурсивного сопоставления имен свойств с ключами конфигурации.
+		/// </summary>
+		/// <typeparam name="T">Тип нового экземпляра для связывания.</typeparam>
+		/// <param name="configuration">Экземпляр конфигурации для связывания.</param>
+		/// <returns>Новый экземпляр T в случае успеха, default(T) в противном случае.</returns>
+		var authConfig = authSection.Get<AuthConfig>();
 
+        // Регистрируем конфигурацию
         builder.Services.Configure<AuthConfig>(authSection);
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
+
+        // Добавляю генератор Swagger в сервисы
         builder.Services.AddSwaggerGen(c =>
         {
-            c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+            // Добавляю дополнительные элементы для отображения в пользовательском интерфейсе Swagger
+			c.SwaggerDoc("v1", new OpenApiInfo {
+				Version = "v1",
+				Title = "ToDo API",
+				Description = "An ASP.NET Core Web API for managing ToDo items",
+				TermsOfService = new Uri("https://example.com/terms"),
+				Contact = new OpenApiContact {
+					Name = "Example Contact",
+					Url = new Uri("https://example.com/contact")
+				},
+				License = new OpenApiLicense {
+					Name = "Example License",
+					Url = new Uri("https://example.com/license")
+				}
+			});
+
+
+			c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
             {
                 Description = "Введите токен пользователя",
                 Name = "Authorization",
@@ -54,10 +85,14 @@ internal class Program
             });
         });
 
+        // Регистрируем для DAL базу данных (чтобы видел :) )
         builder.Services.AddDbContext<DAL.DataContext>(options =>
         {
+            // Указываем, что мы используем для подключения
+            // Для connectionString есть свой обработчик, вон он снизу 
             options.UseNpgsql(builder.Configuration.GetConnectionString("PostgreSql"), sql => { });
         });
+
 
         builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
@@ -93,20 +128,25 @@ internal class Program
 
         var app = builder.Build();
 
-
+        // Делаем так, чтобы при каждом запуске запускалась миграции (обновлялись данные)
+        // Сервисы scoped живут в рамках запроса, будет использован один Instance, независимо от кол-ва обращений
         using (var serviceScope = ((IApplicationBuilder)app).ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope())
         {
             if (serviceScope != null)
             {
+                // Получаем сервис контекста с DAL
                 var context = serviceScope.ServiceProvider.GetRequiredService<DAL.DataContext>();
                 context.Database.Migrate();
             }
         }
 
-        // Configure the HTTP request pipeline.
-        //if (app.Environment.IsDevelopment())
-        {
-            app.UseSwagger();
+		// Configure the HTTP request pipeline.
+
+		// Промежуточное ПО для обслуживания сгенерированного документа JSON и пользовательского интерфейса Swagger
+
+		//if (app.Environment.IsDevelopment()) // Будет работать только в режиме "Разработка"
+		{
+			app.UseSwagger();
             app.UseSwaggerUI();
         }
 
