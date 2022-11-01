@@ -18,12 +18,14 @@ namespace Api.Services
         private readonly IMapper _mapper;
         private readonly DAL.DataContext _context;
         private readonly AuthConfig _config;
+		private readonly ILogger<IUserService> logger;
 
-        public UserService(IMapper mapper, DataContext context, IOptions<AuthConfig> config)
+        public UserService(IMapper mapper, DataContext context, IOptions<AuthConfig> config, ILogger<IUserService> logger)
         {
             _mapper = mapper;
             _context = context;
             _config = config.Value;
+			this.logger = logger;
         }
 
 		public async Task CreateUser(CreateUserModel model) {
@@ -43,7 +45,6 @@ namespace Api.Services
             var user = await GetUserById(id);
 
             return _mapper.Map<UserModel>(user);
-
         }
 
 		

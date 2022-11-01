@@ -18,13 +18,15 @@ namespace Api.Services
         private readonly DAL.DataContext _context;
         private readonly AuthConfig _config;
 		private readonly IUserService userService;
+		private readonly ILogger<ITokenService> logger;
 
-        public TokenService(IMapper mapper, DataContext context, IOptions<AuthConfig> config, IUserService userService)
+        public TokenService(IMapper mapper, DataContext context, IOptions<AuthConfig> config, IUserService userService, ILogger<ITokenService> logger)
         {
             _mapper = mapper;
             _context = context;
             _config = config.Value;
 			this.userService = userService;
+			this.logger = logger;
         }
 
 		public async Task<TokenModel> GetToken(string login, string password) {
