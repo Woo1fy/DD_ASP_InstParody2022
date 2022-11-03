@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="ServiceHelper\**" />
+    <Content Remove="ServiceHelper\**" />
+    <EmbeddedResource Remove="ServiceHelper\**" />
+    <None Remove="ServiceHelper\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.10" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-rc.2.22472.11">
@@ -25,7 +32,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="ServiceHelper\" />
   </ItemGroup>
 
 </Project>

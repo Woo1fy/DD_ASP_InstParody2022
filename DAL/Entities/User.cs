@@ -16,6 +16,8 @@ namespace DAL.Entities
         public string? Email { get; set; } 
         public string? PasswordHash { get; set; } 
         public DateTimeOffset BirthDate { get; set; } // Бэк не должен быть зависим от региона, поэтому указываем DateTimeOffset
+
+        public virtual ICollection<UserSession>? Sessions { get; set; }
     }
 
     // Здесь будут прописываться также связи сущности и все, что с ней связано

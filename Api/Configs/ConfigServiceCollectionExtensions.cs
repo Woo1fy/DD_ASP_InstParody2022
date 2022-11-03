@@ -1,14 +1,17 @@
-﻿using Api.Services.Abstract;
-using Api.Services;
+﻿using Api.Services;
+using Api.Services.Abstract;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
-namespace Api.Configs {
-	public static class ConfigServiceCollectionExtensions {
+namespace Api.Configs
+{
+	public static class ConfigServiceCollectionExtensions
+	{
 
-		public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration config) {
+		public static IServiceCollection AddConfig(this IServiceCollection services, IConfiguration config)
+		{
 
 			// Add services to the container.
 			// Создаем конфигурацию для аутентификации
@@ -25,7 +28,8 @@ namespace Api.Configs {
 			services.AddSwaggerGen(c =>
 			{
 
-				c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme {
+				c.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+				{
 					Description = "Введите токен пользователя",
 					Name = "Authorization",
 					In = ParameterLocation.Header,
@@ -73,7 +77,8 @@ namespace Api.Configs {
 			}).AddJwtBearer(o =>
 			{
 				o.RequireHttpsMetadata = false;
-				o.TokenValidationParameters = new TokenValidationParameters {
+				o.TokenValidationParameters = new TokenValidationParameters
+				{
 					ValidateIssuer = true,
 					ValidIssuer = authConfig.Issuer,
 					ValidateAudience = true,
@@ -83,6 +88,8 @@ namespace Api.Configs {
 					IssuerSigningKey = authConfig.SymmetricSecurityKey(),
 					ClockSkew = TimeSpan.Zero,
 				};
+				//	using (var dc = new DataContext (o => ))
+				//	o.SecurityTokenValidators.Add(new TokenValidator());
 			});
 
 			services.AddAuthorization(o =>
@@ -97,7 +104,8 @@ namespace Api.Configs {
 			return services;
 		}
 
-		public static IServiceCollection AddDependencyGroup(this IServiceCollection services) {
+		public static IServiceCollection AddDependencyGroup(this IServiceCollection services)
+		{
 
 			services.AddScoped<IUserService, UserService>();
 			services.AddScoped<ITokenService, TokenService>();

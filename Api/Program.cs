@@ -43,7 +43,7 @@ internal class Program
 
         app.UseAuthentication();
         app.UseAuthorization();
-
+		app.UseTokenValidator();
         app.MapControllers();
 
         app.Run();

@@ -37,5 +37,6 @@ namespace DAL
 		/// Объекты DbSet создаются из DbContext с помощью метода DbContext.Set.
 		/// </summary>
 		public DbSet<User> Users => Set<User>();
+        public DbSet<UserSession> UserSessions => Set<UserSession>();
     }
 }
