@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20221106065849_test1")]
-    partial class AddedPost
+    [Migration("20221106124447_AddedPostAndComments")]
+    partial class AddedPostAndComments
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -58,6 +58,31 @@ namespace Api.Migrations
                     b.ToTable("Attaches");
 
                     b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("DAL.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments");
                 });
 
             modelBuilder.Entity("DAL.Entities.Post", b =>
@@ -161,6 +186,21 @@ namespace Api.Migrations
                     b.Navigation("Author");
                 });
 
+            modelBuilder.Entity("DAL.Entities.Comment", b =>
+                {
+                    b.HasOne("DAL.Entities.User", "Author")
+                        .WithMany("Comment")
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("DAL.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId");
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Post");
+                });
+
             modelBuilder.Entity("DAL.Entities.Post", b =>
                 {
                     b.HasOne("DAL.Entities.User", "Author")
@@ -201,6 +241,8 @@ namespace Api.Migrations
 
             modelBuilder.Entity("DAL.Entities.User", b =>
                 {
+                    b.Navigation("Comment");
+
                     b.Navigation("Posts");
 
                     b.Navigation("Sessions");

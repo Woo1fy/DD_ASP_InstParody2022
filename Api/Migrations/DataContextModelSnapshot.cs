@@ -52,9 +52,34 @@ namespace Api.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Attaches");
+                    b.ToTable("Attaches", (string)null);
 
                     b.UseTptMappingStrategy();
+                });
+
+            modelBuilder.Entity("DAL.Entities.Comment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AuthorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PostId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
+
+                    b.HasIndex("PostId");
+
+                    b.ToTable("Comments", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entities.Post", b =>
@@ -74,7 +99,7 @@ namespace Api.Migrations
 
                     b.HasIndex("AuthorId");
 
-                    b.ToTable("Posts");
+                    b.ToTable("Posts", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entities.User", b =>
@@ -112,7 +137,7 @@ namespace Api.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entities.UserSession", b =>
@@ -137,7 +162,7 @@ namespace Api.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserSessions");
+                    b.ToTable("UserSessions", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Entities.Avatar", b =>
@@ -156,6 +181,21 @@ namespace Api.Migrations
                         .IsRequired();
 
                     b.Navigation("Author");
+                });
+
+            modelBuilder.Entity("DAL.Entities.Comment", b =>
+                {
+                    b.HasOne("DAL.Entities.User", "Author")
+                        .WithMany("Comment")
+                        .HasForeignKey("AuthorId");
+
+                    b.HasOne("DAL.Entities.Post", "Post")
+                        .WithMany()
+                        .HasForeignKey("PostId");
+
+                    b.Navigation("Author");
+
+                    b.Navigation("Post");
                 });
 
             modelBuilder.Entity("DAL.Entities.Post", b =>
@@ -198,6 +238,8 @@ namespace Api.Migrations
 
             modelBuilder.Entity("DAL.Entities.User", b =>
                 {
+                    b.Navigation("Comment");
+
                     b.Navigation("Posts");
 
                     b.Navigation("Sessions");

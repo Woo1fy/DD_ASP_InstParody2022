@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Api.Controllers
 {
@@ -35,5 +36,13 @@ namespace Api.Controllers
 		[HttpGet]
 		[Authorize]
 		public async Task<List<PostModel>> GetCurrentUserPosts() => await postService.GetCurrentUserPosts(GetCurrentUser());
+
+		[HttpPost]
+		[Authorize]
+		public async Task AddCommentToPost(CreateCommentModel model) => await postService.AddCommentToPost(model, GetCurrentUser());
+
+		[Authorize]
+		[HttpPost]
+		public async Task DeleteCommentFromPost(Guid id) => await postService.DeleteCommentFromPost(id, GetCurrentUser());
 	}
 }

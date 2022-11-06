@@ -88,10 +88,50 @@ namespace Api.Services
 			return await _context.Posts.AsNoTracking().ProjectTo<PostModel>(_mapper.ConfigurationProvider).ToListAsync();
 		}
 
-		//public async Task<UserModel> GetUserPost(Guid id)
+		//public async Task<Guid> CreatePost(CreatePostModel model, Guid userId)
 		//{
+		//	var post = _mapper.Map<DAL.Entities.Post>(model);
 
+		//	var user = await userService.GetUserById(userId);
+		//	post.Author = user;
 
+		//	var t = await _context.Posts.AddAsync(post);
+
+		//	await _context.SaveChangesAsync();
+		//	return t.Entity.Id;
 		//}
+
+		public async Task<Guid> AddCommentToPost(CreateCommentModel model, Guid userId)
+		{
+			var comment = _mapper.Map<DAL.Entities.Comment>(model);
+
+			var user = await userService.GetUserById(userId);
+			comment.Author = user;
+			var post = await GetPostById(model.PostId);
+			comment.Post = post;
+
+			var t = await _context.Comments.AddAsync(comment);
+
+			await _context.SaveChangesAsync();
+			return t.Entity.Id;
+		}
+
+		public async Task DeleteCommentFromPost(Guid id, Guid userId)
+		{
+			var post = await GetPostById(id, userId);
+			if (post != null)
+			{
+				_context.Posts.Remove(post);
+				await _context.SaveChangesAsync();
+			}
+		}
+
+		private async Task<DAL.Entities.Post> GetPostById(Guid id)
+		{
+			var post = await _context.Posts.Include(x => x.Comment).FirstOrDefaultAsync(x => x.Id == id);
+			if (post == null)
+				throw new Exception("post not found");
+			return post;
+		}
 	}
 }
