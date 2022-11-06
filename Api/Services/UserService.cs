@@ -50,8 +50,8 @@ namespace Api.Services
         public async Task<AttachModel> GetUserAvatar(Guid userId)
         {
             var user = await GetUserById(userId);
-            var atach = _mapper.Map<AttachModel>(user.Avatar);
-            return atach;
+            var attach = _mapper.Map<AttachModel>(user.Avatar);
+            return attach;
         }
 
         public async Task Delete(Guid id)
@@ -76,7 +76,7 @@ namespace Api.Services
             return await _context.Users.AsNoTracking().ProjectTo<UserModel>(_mapper.ConfigurationProvider).ToListAsync();
         }
 
-        private async Task<DAL.Entities.User> GetUserById(Guid id)
+        public async Task<DAL.Entities.User> GetUserById(Guid id)
         {
             var user = await _context.Users.Include(x => x.Avatar).FirstOrDefaultAsync(x => x.Id == id);
             if (user == null)

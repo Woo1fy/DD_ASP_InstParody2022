@@ -65,8 +65,9 @@ internal class Program
         builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
         builder.Services.AddScoped<UserService>();
+		builder.Services.AddScoped<PostService>();
 
-        builder.Services.AddAuthentication(o =>
+		builder.Services.AddAuthentication(o =>
         {
             o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(o =>
