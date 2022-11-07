@@ -1,9 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Api.Models
+﻿namespace Api.Models
 {
-    public class CommentModel
-    {
+	public class CommentModel
+	{
 		public Guid Id { get; set; }
 
 		public string? Text { get; set; }
@@ -12,7 +10,6 @@ namespace Api.Models
 
 		public CommentModel()
 		{
-
 		}
 
 		public CommentModel(Guid id, string text, Guid authorId, Guid postId)

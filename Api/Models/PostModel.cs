@@ -1,9 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Api.Models
+﻿namespace Api.Models
 {
-    public class PostModel
-    {
+	public class PostModel
+	{
 		public Guid Id { get; set; }
 
 		public string? Text { get; set; }
@@ -11,7 +9,6 @@ namespace Api.Models
 
 		public PostModel()
 		{
-
 		}
 
 		public PostModel(Guid id, string text, Guid authorId)

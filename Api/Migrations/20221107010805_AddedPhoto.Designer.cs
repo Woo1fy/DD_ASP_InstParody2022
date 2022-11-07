@@ -3,6 +3,7 @@ using System;
 using DAL;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Api.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20221107010805_AddedPhoto")]
+    partial class AddedPhoto
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,7 +33,7 @@ namespace Api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<Guid?>("AuthorId")
+                    b.Property<Guid>("AuthorId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("FilePath")
@@ -176,7 +179,7 @@ namespace Api.Migrations
                 {
                     b.HasBaseType("DAL.Entities.Attach");
 
-                    b.Property<Guid?>("PostId")
+                    b.Property<Guid>("PostId")
                         .HasColumnType("uuid");
 
                     b.HasIndex("PostId");
@@ -188,7 +191,9 @@ namespace Api.Migrations
                 {
                     b.HasOne("DAL.Entities.User", "Author")
                         .WithMany()
-                        .HasForeignKey("AuthorId");
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Author");
                 });
@@ -256,7 +261,9 @@ namespace Api.Migrations
 
                     b.HasOne("DAL.Entities.Post", "Post")
                         .WithMany("Photo")
-                        .HasForeignKey("PostId");
+                        .HasForeignKey("PostId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Post");
                 });
@@ -279,7 +286,8 @@ namespace Api.Migrations
 
             modelBuilder.Entity("DAL.Entities.Avatar", b =>
                 {
-                    b.Navigation("User");
+                    b.Navigation("User")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

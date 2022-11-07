@@ -3,36 +3,36 @@ using Common;
 
 namespace Api
 {
-    public class MapperProfile: Profile
-    {
-        public MapperProfile() {
-            CreateMap<Models.CreateUserModel, DAL.Entities.User>()
-                .ForMember(d=>d.Id, m=>m.MapFrom(s=>Guid.NewGuid()))
-                .ForMember(d=>d.PasswordHash, m=>m.MapFrom(s=>HashHelper.GetHash(s.Password)))
-                .ForMember(d=>d.BirthDay, m=>m.MapFrom(s=>s.BirthDate.UtcDateTime))
-                ;
+	public class MapperProfile : Profile
+	{
+		public MapperProfile()
+		{
+			CreateMap<Models.CreateUserModel, DAL.Entities.User>()
+				.ForMember(d => d.Id, m => m.MapFrom(s => Guid.NewGuid()))
+				.ForMember(d => d.PasswordHash, m => m.MapFrom(s => HashHelper.GetHash(s.Password)))
+				.ForMember(d => d.BirthDay, m => m.MapFrom(s => s.BirthDate.UtcDateTime))
+				;
 
 			CreateMap<Models.CreatePostModel, DAL.Entities.Post>()
 				.ForMember(d => d.Id, m => m.MapFrom(s => Guid.NewGuid()))
 				;
 
-            CreateMap<Models.CreateCommentModel, DAL.Entities.Comment>()
+			CreateMap<Models.CreateCommentModel, DAL.Entities.Comment>()
 				;
 
 			CreateMap<DAL.Entities.User, Models.UserModel>();
 
-            CreateMap<DAL.Entities.Avatar, Models.AttachModel>();
+			CreateMap<DAL.Entities.Avatar, Models.AttachModel>();
 			//CreateMap<DAL.Entities.Photo, Models.AttachModel>();
 
 			CreateMap<DAL.Entities.Post, Models.PostModel>()
-                .ForMember(d => d.AuthorId, m => m.MapFrom(m => m.Author))
-                ;
+				.ForMember(d => d.AuthorId, m => m.MapFrom(m => m.Author))
+				;
 
 			CreateMap<DAL.Entities.Comment, Models.CommentModel>()
 				.ForMember(d => d.AuthorId, m => m.MapFrom(m => m.Author))
-                .ForMember(d => d.PostId, m => m.MapFrom(m => m.Post))
+				.ForMember(d => d.PostId, m => m.MapFrom(m => m.Post))
 				;
-
 		}
-    }
+	}
 }

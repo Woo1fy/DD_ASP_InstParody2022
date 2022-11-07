@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace DAL.Entities
+﻿namespace DAL.Entities
 {
 	public class Comment
 	{
@@ -14,6 +7,5 @@ namespace DAL.Entities
 		public DateTimeOffset CreationDate = DateTimeOffset.Now.UtcDateTime;
 		public virtual Post? Post { get; set; }
 		public virtual User? Author { get; set; }
-
 	}
 }
