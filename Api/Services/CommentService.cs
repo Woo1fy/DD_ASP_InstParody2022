@@ -2,6 +2,7 @@
 using Api.Models;
 using AutoMapper;
 using DAL;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace Api.Services
@@ -27,13 +28,28 @@ namespace Api.Services
 
 			var user = await userService.GetUserById(userId);
 			comment.Author = user;
-			var post = await postService.GetPostById(model.PostId, userId);
+			var post = await postService.GetPostById(model.PostId);
 			comment.Post = post;
 
 			var t = await context.Comments.AddAsync(comment);
 
 			await context.SaveChangesAsync();
 			return t.Entity.Id;
+		}
+
+		// Не знаю, правильно находить по идентификатору поста коммент, или же только по своему идентификатору.
+		// Я думал так. Раз пользователь хочет изменить коммент, то он сначала заходит в объект за 
+		// которым он закреплён, а значит мне уже проще искать через этот объект определенные комментарии,
+		// чем сёрчить по всей таблице комментов нужные мне.
+		public async Task ChangeComment(Guid postId, Guid commentId, String text, Guid userId)
+		{
+			var post = await postService.GetPostById(postId, userId);
+			var comment = post.Comments?.FirstOrDefault(c => c.Id == commentId);
+			if (comment == null)
+				throw new Exception("comment is not found");
+
+			comment.Text = text;
+			await context.SaveChangesAsync();
 		}
 
 		public async Task DeleteCommentFromPost(Guid id, Guid userId)

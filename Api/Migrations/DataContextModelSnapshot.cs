@@ -24,11 +24,9 @@ namespace Api.Migrations
 
             modelBuilder.Entity("DAL.Entities.Attach", b =>
                 {
-                    b.Property<long>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+                        .HasColumnType("uuid");
 
                     b.Property<Guid?>("AuthorId")
                         .HasColumnType("uuid");
@@ -91,6 +89,10 @@ namespace Api.Migrations
                     b.Property<Guid?>("AuthorId")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Header")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Text")
                         .IsRequired()
                         .HasColumnType("text");
@@ -108,8 +110,8 @@ namespace Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<long?>("AvatarId")
-                        .HasColumnType("bigint");
+                    b.Property<Guid?>("AvatarId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("BirthDay")
                         .HasColumnType("timestamp with time zone");
@@ -196,11 +198,11 @@ namespace Api.Migrations
             modelBuilder.Entity("DAL.Entities.Comment", b =>
                 {
                     b.HasOne("DAL.Entities.User", "Author")
-                        .WithMany("Comment")
+                        .WithMany("Comments")
                         .HasForeignKey("AuthorId");
 
                     b.HasOne("DAL.Entities.Post", "Post")
-                        .WithMany("Comment")
+                        .WithMany("Comments")
                         .HasForeignKey("PostId");
 
                     b.Navigation("Author");
@@ -255,7 +257,7 @@ namespace Api.Migrations
                         .IsRequired();
 
                     b.HasOne("DAL.Entities.Post", "Post")
-                        .WithMany("Photo")
+                        .WithMany("Photos")
                         .HasForeignKey("PostId");
 
                     b.Navigation("Post");
@@ -263,14 +265,14 @@ namespace Api.Migrations
 
             modelBuilder.Entity("DAL.Entities.Post", b =>
                 {
-                    b.Navigation("Comment");
+                    b.Navigation("Comments");
 
-                    b.Navigation("Photo");
+                    b.Navigation("Photos");
                 });
 
             modelBuilder.Entity("DAL.Entities.User", b =>
                 {
-                    b.Navigation("Comment");
+                    b.Navigation("Comments");
 
                     b.Navigation("Posts");
 

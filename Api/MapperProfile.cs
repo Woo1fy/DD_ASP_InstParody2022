@@ -23,15 +23,17 @@ namespace Api
 			CreateMap<DAL.Entities.User, Models.UserModel>();
 
 			CreateMap<DAL.Entities.Avatar, Models.AttachModel>();
-			//CreateMap<DAL.Entities.Photo, Models.AttachModel>();
 
-			CreateMap<DAL.Entities.Post, Models.PostModel>()
-				.ForMember(d => d.AuthorId, m => m.MapFrom(m => m.Author))
-				;
+			CreateMap<DAL.Entities.Photo, Models.AttachModel>();
+
+			CreateMap<DAL.Entities.Post, Models.PostModel>();
+
+			CreateMap<DAL.Entities.Photo, Models.PhotoModel>()
+				.ForMember(p => p.FilePath, m => m.MapFrom(s => s.FilePath));
 
 			CreateMap<DAL.Entities.Comment, Models.CommentModel>()
-				.ForMember(d => d.AuthorId, m => m.MapFrom(m => m.Author))
-				.ForMember(d => d.PostId, m => m.MapFrom(m => m.Post))
+				//.ForMember(d => d.AuthorId, m => m.MapFrom(m => m.Author))
+				//.ForMember(d => d.PostId, m => m.MapFrom(m => m.Post))
 				;
 		}
 	}

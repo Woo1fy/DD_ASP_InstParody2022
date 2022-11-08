@@ -2,7 +2,9 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using DAL;
+using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 
 namespace Api.Services
 {
@@ -32,6 +34,16 @@ namespace Api.Services
 			return t.Entity.Id;
 		}
 
+		public async Task ChangePost(Guid postId, Guid userId, string text)
+		{
+			var post = await GetPostById(postId, userId);
+			if (post != null)
+			{
+				post.Text = text;
+				await context.SaveChangesAsync();
+			}
+		}
+		
 		public async Task DeletePost(Guid id, Guid userId)
 		{
 			var post = await GetPostById(id, userId);
@@ -47,19 +59,14 @@ namespace Api.Services
 			return await context.Posts.AnyAsync(x => x.Id == id);
 		}
 
-		public async Task<DAL.Entities.Post> GetPostById(Guid id, Guid userId)
+		public async Task<DAL.Entities.Post> GetPostById(Guid id, Guid? userId = null)
 		{
-			var post = await context.Posts.Where(p => p.Author != null && p.Author.Id == userId).FirstOrDefaultAsync(x => x.Id == id);
+			var post = await context.Posts.Include(c => c.Photos).FirstOrDefaultAsync(x => x.Id == id);
+			if (userId != null) {
+				post = await context.Posts.Include(c => c.Comments).Where(p => p.Author != null && p.Author.Id == userId).FirstOrDefaultAsync(x => x.Id == id);
+			}
 			if (post == null)
 				throw new Exception("post is not found");
-			return post;
-		}
-
-		public async Task<DAL.Entities.Post> GetPostById(Guid id)
-		{
-			var post = await context.Posts.Include(x => x.Comment).FirstOrDefaultAsync(x => x.Id == id);
-			if (post == null)
-				throw new Exception("post not found");
 			return post;
 		}
 
@@ -70,7 +77,26 @@ namespace Api.Services
 
 		public async Task<List<PostModel>> GetPosts()
 		{
-			return await context.Posts.AsNoTracking().ProjectTo<PostModel>(mapper.ConfigurationProvider).ToListAsync();
+			return await context.Posts.Select().AsNoTracking().ProjectTo<PostModel>(mapper.ConfigurationProvider).ToListAsync();
+		}
+
+		public async Task AddPhotoToPost(Guid postId, Guid userId, MetadataModel meta, string filePath)
+		{
+			try
+			{
+				var user = await userService.GetUserById(userId);
+				var post = await context.Posts.Include(x => x.Photos).FirstOrDefaultAsync(x => x.Id == postId);
+				var photo = new Photo { Post = post, Author = user, MimeType = meta.MimeType, FilePath = filePath, Name = meta.Name, Size = meta.Size };
+				post?.Photos?.Add(photo);
+			}
+			catch (NullReferenceException ex)
+			{
+				throw new NullReferenceException(ex.Message);
+			}
+			finally 
+			{ 
+				await context.SaveChangesAsync(); 
+			}
 		}
 
 		#region IDisposable Methods

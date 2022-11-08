@@ -1,4 +1,6 @@
 ﻿using Api.Models;
+using Api.Services;
+using DAL.Entities;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
@@ -8,7 +10,7 @@ namespace Api.Controllers
 	public class AttachController : CommonController
 	{
 		[HttpPost]
-		public static async Task<List<MetadataModel>> UploadFiles([FromForm] List<IFormFile> files)
+		public async Task<List<MetadataModel>> UploadFiles([FromForm] List<IFormFile> files)
 		{
 			var res = new List<MetadataModel>();
 			foreach (var file in files)
@@ -18,7 +20,7 @@ namespace Api.Controllers
 			return res;
 		}
 
-		private static async Task<MetadataModel> UploadFile(IFormFile file)
+		private async Task<MetadataModel> UploadFile(IFormFile file)
 		{
 			var tempPath = Path.GetTempPath();
 			var meta = new MetadataModel

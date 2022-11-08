@@ -89,7 +89,7 @@ namespace Api.Configs
 
 		public static IServiceCollection AddServicesGroup(this IServiceCollection services)
 		{
-			services.AddScoped<AttachService>();
+			services.AddTransient<AttachService>();
 			services.AddScoped<CommentService>();
 			services.AddScoped<PostService>();
 			services.AddScoped<SessionService>();

@@ -1,21 +1,28 @@
-﻿namespace Api.Models
+﻿using DAL.Entities;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Api.Models
 {
 	public class PostModel
 	{
-		public Guid Id { get; set; }
-
-		public string? Text { get; set; }
-		public Guid AuthorId { get; set; }
+		public string Header { get; set; }
+		public string Text { get; set; }
+		public string Author { get; set; }
+		public ICollection<PhotoModel> Photos { get; set; }
+		public ICollection<CommentModel> Comments { get; set; }
 
 		public PostModel()
 		{
+
 		}
 
-		public PostModel(Guid id, string text, Guid authorId)
+		public PostModel(string header, string text, string author, ICollection<PhotoModel> photos, ICollection<CommentModel> comments)
 		{
-			Id = id;
+			Header = header;
 			Text = text;
-			AuthorId = authorId;
+			Author = author;
+			Photos = photos;
+			Comments = comments;
 		}
 	}
 }

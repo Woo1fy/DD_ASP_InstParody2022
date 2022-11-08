@@ -11,5 +11,13 @@ namespace Api.Controllers
 				throw new ArgumentException("You are not authorized!");
 			return userId;
 		}
+
+		protected string GetUriPhoto(string input)
+		{
+			UriBuilder uriBuilder = new UriBuilder();
+			uriBuilder.Path = Request.Path;
+			uriBuilder.Query = Request.QueryString.Value;
+			return uriBuilder.Uri.PathAndQuery;
+		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using Api.Configs;
 using Api.Models;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DAL;
 using DAL.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,11 @@ namespace Api.Services
 
 		//}
 
+		//public async Task<List<UserModel>> GetFiles()
+		//{
+		//	return await context.AsNoTracking().ProjectTo<UserModel>(mapper.ConfigurationProvider).ToListAsync();
+		//}
+
 		public async Task AddAvatarToUser(Guid userId, MetadataModel meta, string filePath)
 		{
 			var user = await context.Users.Include(x => x.Avatar).FirstOrDefaultAsync(x => x.Id == userId);
@@ -54,6 +60,21 @@ namespace Api.Services
 			var attach = mapper.Map<AttachModel>(user.Avatar);
 			return attach;
 		}
+
+		public async Task<AttachModel> GetPictureFromPost(Guid pictureId, Guid postId)
+		{
+			var post = await postService.GetPostById(postId);
+			var attach = mapper.Map<AttachModel>(post.Photos?.FirstOrDefault(p => p.Id == pictureId));
+			
+			return attach;
+		}
+
+		//public async Task<AttachModel> GetPostPhotos(Guid postId)
+		//{
+		//	var post = await postService.GetPostById(postId);
+		//	var attach = mapper.Map<AttachModel>(post.Photos);
+		//	return attach;
+		//}
 
 		#region IDisposable Methods
 

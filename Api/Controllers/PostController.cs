@@ -1,7 +1,9 @@
 ﻿using Api.Models;
 using Api.Services;
+using DAL.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 
 namespace Api.Controllers
 {
@@ -25,46 +27,26 @@ namespace Api.Controllers
 
 		[Authorize]
 		[HttpPost]
+		public async Task ChangePost(Guid postId, String text)
+		=> await postService.ChangePost(postId, GetCurrentUser(), text);
+
+		[Authorize]
+		[HttpPost]
 		public async Task DeletePost(Guid id)
 			=> await postService.DeletePost(id, GetCurrentUser());
 
 		[HttpGet]
 		public async Task<List<PostModel>> GetAllPosts()
-			=> await postService.GetPosts();
+		{
+			var postModels = await postService.GetPosts();
+			
+		}
+			
 
 		[HttpGet]
 		[Authorize]
 		public async Task<List<PostModel>> GetCurrentUserPosts()
 			=> await postService.GetCurrentUserPosts(GetCurrentUser());
 
-		[HttpPost]
-		[Authorize]
-		public async Task AddCommentToPost(CreateCommentModel model)
-			=> await commentService.AddCommentToPost(model, GetCurrentUser());
-
-		[Authorize]
-		[HttpPost]
-		public async Task DeleteCommentFromPost(Guid id)
-			=> await commentService.DeleteCommentFromPost(id, GetCurrentUser());
-
-		[HttpPost]
-		[Authorize]
-		public async Task AddPhotoToPost(Guid postId, MetadataModel model)
-		{
-			var tempFi = new FileInfo(Path.Combine(Path.GetTempPath(), model.TempId.ToString()));
-			if (!tempFi.Exists)
-				throw new FileNotFoundException("file not found");
-			else
-			{
-				var path = Path.Combine(Directory.GetCurrentDirectory(), "attaches", model.TempId.ToString());
-				var destFi = new FileInfo(path);
-				if (destFi.Directory != null && !destFi.Directory.Exists)
-					destFi.Directory.Create();
-
-				System.IO.File.Copy(tempFi.FullName, path, true);
-
-				//await AttachService.AddPhotoToPost(postId, model, path);
-			}
-		}
 	}
 }

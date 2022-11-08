@@ -4,11 +4,12 @@ namespace Api.Models
 {
 	public class CreatePostModel
 	{
-		[Required]
+		public string Header { get; set; }
 		public string Text { get; set; }
-
-		public CreatePostModel(string text)
+		
+		public CreatePostModel(string header, string text)
 		{
+			Header = header;
 			Text = text;
 		}
 	}
